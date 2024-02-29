@@ -12,7 +12,6 @@ app.use(express.urlencoded({ extended: true }));
 const redis = require('redis');
 require('dotenv').config();
 
-
 try {
     mongoose.connect("mongodb://localhost:27017/usersdb", {
         useUnifiedTopology: true,
