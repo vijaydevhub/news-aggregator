@@ -5,6 +5,7 @@ const fs = require('fs');
 const {signup} = require('./src/controllers/user.js');
 const {login} = require('./src/controllers/user.js');
 const {userpreference} = require('./src/controllers/user.js');
+const {setuserpreference} = require('./src/controllers/user.js');
 const mongoose = require('mongoose');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -33,7 +34,7 @@ app.post("/register", signup)
 
 app.get("/userpreference", userpreference)
 
-app.patch("/userpreference", userpreference)
+app.patch("/setuserpreference", setuserpreference)
 
 
 app.listen(port, (err) => {

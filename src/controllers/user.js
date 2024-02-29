@@ -65,6 +65,7 @@ var login = (req, res) => {
 
 var userpreference = (req, res) => {
   var emailPassed = req.body.email;
+  var passwordPassed = req.body.password;
   var preferencePassed = req.body.preferences;
 
   User.findOne({
@@ -74,23 +75,46 @@ var userpreference = (req, res) => {
       if (!user) {
         return res.status(404).send({ message: "User not found" });
       }
-      try {
-        mongoose.query("UPDATE users SET preferences = $1 WHERE id = $2", [
-          preferencePassed,
-          emailPassed,
-        ]);
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal server error" });
-      }
+      let passwordIsValid = bcrypt.compareSync(passwordPassed, user.password);
 
-      return res.status(200).json({
-        message: "Updated user preference Successful",
-      });
+      if (!passwordIsValid) {
+        return res.status(401).send({ message: "Invalid password" });
+      } else {
+        return res.status(200).send(user.preferences);
+      }
     })
     .catch((err) => {
-      return res.status(500).send({ message: err });
+      return res.status(500).send({ err });
     });
 };
 
-module.exports = { signup, login, userpreference };
+var setuserpreference = (req, res) => {
+  var emailPassed = req.body.email;
+  var passwordPassed = req.body.password;
+  var preferencePassed = req.body.preferences;
+
+  User.findOne({
+    email: emailPassed,
+  })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: "User not found" });
+      }
+      let passwordIsValid = bcrypt.compareSync(passwordPassed, user.password);
+      if (!passwordIsValid) {
+        return res.status(401).send({ message: "Invalid password" });
+      } else {
+        user.preferences = preferencePassed;
+        user.save();
+        return res.status(200).json({
+          status: "success",
+          message: "News preferences updated as " + preferencePassed,
+        });
+      }
+    })
+    .catch((err) => {
+      return res.status(500).send({ err });
+    });
+};
+
+module.exports = { signup, login, userpreference, setuserpreference };
